@@ -1,0 +1,21 @@
+version: "3.9"
+services:
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: api
+    restart: unless-stopped
+    expose: ["3000"]
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: web
+    restart: unless-stopped
+    ports: ["80:80","443:443"]
+    depends_on: [api]
+    volumes: [ "caddy_data:/data", "caddy_config:/config" ]
+volumes:
+  caddy_data: {}
+  caddy_config: {}

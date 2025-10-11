@@ -1,0 +1,28 @@
+{
+  "name":"@curbonomix/api","version":"0.0.0","private":true,"type":"commonjs","main":"dist/main.js",
+  "scripts":{"dev":"ts-node src/main.ts","build":"tsc -p tsconfig.json","start":"node dist/main.js"},
+  "dependencies":{"fastify":"^4.25.0"},
+  "devDependencies":{"typescript":"^5.5.4","ts-node":"^10.9.2","@types/node":"^20.11.0"}
+}
+// apps/api/package.json
+"dependencies": {
+  "@curbonomix/agents": "workspace:*",
+  "@curbonomix/lms": "workspace:*",
+  "@curbonomix/curb-calculator": "workspace:*",
+  "@curbonomix/shared": "workspace:*"
+}
+
+{
+  "name": "curbonomix",
+  "version": "1.0.0",
+  "private": true,
+  "workspaces": [
+    "packages/*",
+    "apps/*"
+  ],
+  "scripts": {        
+    "dev:api": "npm run dev --workspace=@curbonomix/api",
+    "dev:web": "npm run dev --workspace=@curbonomix/customer-portal",
+    "build:web": "npm run build --workspace=@curbonomix/customer-portal"
+  }
+}   

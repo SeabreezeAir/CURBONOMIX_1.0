@@ -1,0 +1,13 @@
+﻿node_modules/
+dist/
+build/
+coverage/
+.env*
+.DS_Store
+.idea/
+.vscode/
+npm-debug.log*
+yarn-*.log*
+pnpm-*.log*
+.eslintcache
+docker-data/

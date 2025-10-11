@@ -1,0 +1,29 @@
+export class MemoryStore {
+  private store: Record<string, any> = {};
+
+  set(key: string, value: any) {
+    this.store[key] = value;
+  }
+
+  get(key: string) {
+    return this.store[key];
+  }
+
+  clear() {
+    this.store = {};
+  }
+
+  dump() {
+    return { ...this.store };
+  }
+  // index.ts
+import type { IAgent } from "../../../lms/src";
+import { ArchitectAgent } from "./ArchitectAgent";
+
+const agent: IAgent = new ArchitectAgent();
+
+export default agent;
+export { ArchitectAgent };
+export type { IAgent };
+
+}

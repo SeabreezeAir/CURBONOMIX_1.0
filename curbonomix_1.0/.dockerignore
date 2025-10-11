@@ -1,0 +1,9 @@
+﻿**/node_modules
+**/dist
+**/build
+**/.vite
+.git
+.gitignore
+README.md
+Dockerfile
+docker-compose.yml

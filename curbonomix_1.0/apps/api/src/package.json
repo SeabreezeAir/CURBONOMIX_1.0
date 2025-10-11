@@ -1,0 +1,19 @@
+{
+  "name": "@curbonomix_1.0/api",
+  "version": "1.0.0",
+  "private": true,
+  "workspaces": [
+    "packages/*",
+    "apps/*"
+  ]
+  
+}
+
+\
+  "scripts": {
+    "dev:api": "npm run dev --workspace=@curbonomix_1.0/api",
+    "dev:web": "npm run dev --workspace=@curbonomix_1.0/customer-portal",
+    "build:web": "npm run build --workspace=@curbonomix_1.0/customer-portal"
+  }
+
+}

@@ -1,0 +1,10 @@
+{
+  email you@example.com
+}
+curbonomix.com, www.curbonomix.com {
+  encode gzip
+  root * /srv/customer
+  file_server
+  handle_path /api/* { uri strip_prefix /api reverse_proxy api:3000 }
+}
+api.curbonomix.com { reverse_proxy api:3000 }

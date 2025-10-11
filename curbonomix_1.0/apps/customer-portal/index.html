@@ -1,0 +1,16 @@
+<!doctype html><html lang="en"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>CURBONOMIX — RTU Adapter</title>
+<style>
+:root{--bg:#0b1220;--panel:#0e1729;--ink:#b4e1ff}
+body{margin:0;background:radial-gradient(#0b1220,#050a14);color:var(--ink);font-family:ui-sans-serif,system-ui,Segoe UI,Roboto}
+.app{display:grid;grid-template-columns:360px 1fr;gap:16px;padding:16px}
+.card{background:linear-gradient(180deg,#0e1729 0%,#0b1220 100%);border:1px solid #13223a;border-radius:14px;padding:16px;box-shadow:0 0 0 1px #0b1a2e inset}
+label{display:block;font-size:12px;opacity:.85;margin-top:10px}
+input,button{width:100%;padding:10px 12px;background:#0b1527;color:var(--ink);border:1px solid #163055;border-radius:10px;outline:none}
+button{cursor:pointer;background:#0d233a;border:1px solid #1d3f69}
+button.primary{background:#123b57;border-color:#1d6e93;color:#d8f7ff}
+.small{font-size:11px;opacity:.8}
+.canvas{height:520px;border:1px dashed #27456d;border-radius:12px;background:repeating-linear-gradient(0deg,transparent 0 22px,#0d1628 22px 23px),repeating-linear-gradient(90deg,transparent 0 22px,#0d1628 22px 23px)}
+.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}
+</style></head>
+<body><div id="root"></div><script type="module" src="/src/main.tsx"></script></body></html>

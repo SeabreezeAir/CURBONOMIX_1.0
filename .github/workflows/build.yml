@@ -1,34 +1,64 @@
-name: Build
+name: Build & Push curboinomix_1.0
+
 on:
   push:
-    branches: [main]
+    branches: [ main ]
+    paths-ignore:
+      - ".github/**"
+  workflow_dispatch:
 
-permissions:
-  contents: read
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository }} # e.g. owner/repo
+  APP_TAG_PRIMARY: curboinomix_1.0
+  DOCKERFILE: ./Dockerfile
+  CONTEXT: .
 
 jobs:
-  web:
+  build:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+      id-token: write
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout
+        uses: actions/checkout@v4
 
-      - uses: actions/setup-node@v4
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to GHCR
+        uses: docker/login-action@v3
         with:
-          node-version: 20
-          cache: npm
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
 
-      - run: npm ci
-      - run: npm run build          # e.g., Next.js or Vite build to ./dist or ./.next
-
-      - name: Package build
-        run: |
-          mkdir -p artifact
-          # adjust for your framework output
-          cp -r dist artifact/ || cp -r .next artifact/ || true
-
-      - name: Upload build artifact
-        uses: actions/upload-artifact@v4
+      - name: Extract metadata (tags, labels)
+        id: meta
+        uses: docker/metadata-action@v5
         with:
-          name: curbonomix-web
-          path: artifact
-          retention-days: 7
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+          tags: |
+            type=raw,value=${{ env.APP_TAG_PRIMARY }}
+            type=raw,value=latest
+            type=sha,prefix=sha-,format=short
+          labels: |
+            org.opencontainers.image.title=curboinomix
+            org.opencontainers.image.version=${{ env.APP_TAG_PRIMARY }}
+
+      - name: Build and push
+        uses: docker/build-push-action@v6
+        with:
+          context: ${{ env.CONTEXT }}
+          file: ${{ env.DOCKERFILE }}
+          push: true
+          platforms: linux/amd64
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max

@@ -1,0 +1,6 @@
+modelParameters:
+  max_tokens: 16384
+  temperature: 1
+  top_p: 1
+model: openai/gpt-5-chat
+messages: []

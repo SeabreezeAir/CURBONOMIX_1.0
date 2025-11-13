@@ -1,0 +1,35 @@
+/** RTU roof curb adapter core: catalog lookup, sizing, geometry, exports. */
+export type RTUSpec = {
+    model?: string;
+    new_L: number;
+    new_W: number;
+    height: number;
+    flange_h: number;
+    supply_x: number;
+    supply_y: number;
+    return_x: number;
+    return_y?: number;
+    steel_gauge: number;
+    sst: number;
+    brake_lim: number;
+    new_L2?: number;
+    new_W2?: number;
+    cfm_supply?: number;
+    cfm_return?: number;
+};
+export type MeshData = {
+    vertices: number[][];
+    faces: number[][];
+};
+export declare function resolveModel(model: string): RTUSpec | undefined;
+export declare function sizePlenum(spec: RTUSpec): {
+    cfm_s: number;
+    cfm_r: number;
+    dp_inwc: number;
+    vel_sup_fpm: number;
+    vel_ret_fpm: number;
+};
+export declare function buildAdapter(spec: RTUSpec): MeshData;
+export declare function toDXF(mesh: MeshData): string;
+export declare function toGCode(mesh: MeshData): string;
+export declare function toSubmittal(spec: RTUSpec, perf: ReturnType<typeof sizePlenum>): string;

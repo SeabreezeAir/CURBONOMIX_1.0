@@ -1,0 +1,26 @@
+{
+  "name": "@curbonomix/agents-architect",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Architect agent plans the curb adapter job pipeline",
+  "type": "module",
+  "main": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.mjs"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsc -b",
+    "clean": "rimraf dist *.tsbuildinfo"
+  },
+  "dependencies": {
+    "@curbonomix/curb-classifier": "workspace:*",
+    "@curbonomix/jobs": "workspace:*"
+  }
+}

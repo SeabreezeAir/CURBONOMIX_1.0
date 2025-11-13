@@ -1,0 +1,2 @@
+import type { Task,IAgent,AgentResult } from "../../../lms/src";
+export class DesignerAgent implements IAgent{ name="designer"; run(_:Task):AgentResult{ return {ok:true,data:{ui:{theme:"clean",panels:["existing/new","preview","actions"]}}} } }

@@ -4,10 +4,13 @@
   "private": true,
   "workspaces": [
     "packages/*",
+    "packages/agents/*",
     "apps/*"
   ],
   "scripts": {
-    "dev:api": "npm run dev --workspace=@curbonomix/api",
+    "build": "tsc -b packages/rtu-library apps/api",
+    "clean": "rimraf **/dist **/*.tsbuildinfo",
+    "dev:api": "cd apps/api && tsx src/main.ts",
     "dev:web": "npm run dev --workspace=@curbonomix/customer-portal",
     "build:web": "npm run build --workspace=@curbonomix/customer-portal"
   }

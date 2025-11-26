@@ -7,6 +7,8 @@ export type RTUSpec = {
 };
 export type MeshData={vertices:number[][];faces:number[][]};
 
+export { buildAdvancedAdapter, validateGeometry } from "./advanced-geometry.js";
+
 const catalog: Record<string, RTUSpec> = {
   "TRANE-TTA090": { new_L: 90, new_W: 50, height: 18, flange_h: 3, supply_x: 20, supply_y: 10, return_x: 60, return_y: 10, steel_gauge: 18, sst: 4, brake_lim: 80 },
   "LENNOX-LGA120": { new_L: 96, new_W: 55, height: 20, flange_h: 3, supply_x: 22, supply_y: 12, return_x: 62, return_y: 12, steel_gauge: 18, sst: 4, brake_lim: 80 },
@@ -22,9 +24,41 @@ export function sizePlenum(spec:RTUSpec){
   return { cfm_s, cfm_r, dp_inwc, vel_sup_fpm:v_sup, vel_ret_fpm:v_ret };
 }
 export function buildAdapter(spec:RTUSpec):MeshData{
+  // BOTTOM (z=0): Existing RTU curb dimensions (wider)
+  // TOP (z=height): New RTU curb dimensions
+  // 4-sided downflow transition box
   const L1=spec.new_L,W1=spec.new_W,L2=spec.new_L2??spec.new_L,W2=spec.new_W2??spec.new_W,H=spec.height;
-  const v=[[0,0,0],[L1,0,0],[L1,W1,0],[0,W1,0],[ (L1-L2)/2,(W1-W2)/2,H],[ (L1+L2)/2,(W1-W2)/2,H],[ (L1+L2)/2,(W1+W2)/2,H],[ (L1-L2)/2,(W1+W2)/2,H]];
-  const f=[[0,1,2],[0,2,3],[4,5,6],[4,6,7],[0,1,5],[0,5,4],[1,2,6],[1,6,5],[2,3,7],[2,7,6],[3,0,4],[3,4,7]]; return {vertices:v,faces:f};
+  
+  // Vertices: bottom 4 corners at z=0, top 4 corners at z=H
+  // Bottom corners (existing curb) - origin at (0,0)
+  const v=[
+    [0,0,0],          // 0: bottom front-left
+    [L1,0,0],         // 1: bottom front-right
+    [L1,W1,0],        // 2: bottom back-right
+    [0,W1,0],         // 3: bottom back-left
+    // Top corners (new unit) - centered above bottom
+    [(L1-L2)/2,(W1-W2)/2,H],      // 4: top front-left
+    [(L1+L2)/2,(W1-W2)/2,H],      // 5: top front-right
+    [(L1+L2)/2,(W1+W2)/2,H],      // 6: top back-right
+    [(L1-L2)/2,(W1+W2)/2,H]       // 7: top back-left
+  ];
+  
+  // Faces: 4 sides + bottom + top (all as triangles)
+  const f=[
+    // Bottom (existing curb opening)
+    [0,1,2],[0,2,3],
+    // Top (new unit opening)
+    [4,5,6],[4,6,7],
+    // Front side (y=0 to y=(W1-W2)/2)
+    [0,1,5],[0,5,4],
+    // Right side (x=L1 to x=(L1+L2)/2)
+    [1,2,6],[1,6,5],
+    // Back side
+    [2,3,7],[2,7,6],
+    // Left side
+    [3,0,4],[3,4,7]
+  ]; 
+  return {vertices:v,faces:f};
 }
 export function toDXF(mesh:MeshData){
   const vb=(p:number[])=>`${p[0]},${p[1]},${p[2]}`; let out=`0
@@ -55,7 +89,7 @@ EOF
 }
 export function toGCode(mesh:MeshData){
   const loop=[0,1,2,3,0].map(i=>mesh.vertices[i]);
-  let g="(CURBONOMIX RTU ADAPTER)`nG21`nG90`nG17`nM3 S8000`nG0 Z5`n";
+  let g="(CURBONOMIX RTU ADAPTER)\nG21\nG90\nG17\nM3 S8000\nG0 Z5\n";
   g+=`G0 X${loop[0][0].toFixed(3)} Y${loop[0][1].toFixed(3)}\nG1 Z0 F400\n`;
   for(let i=1;i<loop.length;i++){ g+=`G1 X${loop[i][0].toFixed(3)} Y${loop[i][1].toFixed(3)} F800\n`; }
   return g+`G0 Z5\nM5\nM30\n`;

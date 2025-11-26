@@ -1,0 +1,18 @@
+{
+  "name": "@curbonomix/rtu-core",
+  "version": "0.1.0",
+  "type": "module",
+  "main": "src/index.js",
+  "types": "src/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./src/index.js",
+      "types": "./src/index.d.ts"
+    },
+    "./advanced-geometry.js": {
+      "import": "./src/advanced-geometry.js",
+      "types": "./src/advanced-geometry.d.ts"
+    }
+  },
+  "private": true
+}

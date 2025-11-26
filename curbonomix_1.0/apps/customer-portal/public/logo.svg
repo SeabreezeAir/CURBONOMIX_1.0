@@ -1,0 +1,26 @@
+<svg width="256" height="256" viewBox="0 0 256 256" xmlns="http://www.w3.org/2000/svg">
+      <g transform="translate(128 128)">
+            <polygon
+                  points="100 0 50 86.602 -50 86.602 -100 0 -50 -86.602 50 -86.602"
+                  fill="none"
+                  stroke="#FF6B00"
+                  stroke-width="18"
+                  stroke-linejoin="round"
+            />
+            <polygon
+                  points="78 0 39 67.584 -39 67.584 -78 0 -39 -67.584 39 -67.584"
+                  fill="#003D5C"
+            />
+            <polygon
+                  points="58 0 29 50.228 -29 50.228 -58 0 -29 -50.228 29 -50.228"
+                  fill="#0066CC"
+                  opacity="0.85"
+            />
+            <polygon
+                  points="36 0 18 31.177 -18 31.177 -36 0 -18 -31.177 18 -31.177"
+                  fill="#1A8FFF"
+                  opacity="0.65"
+            />
+            <circle cx="0" cy="0" r="14" fill="#FF6B00" />
+      </g>
+</svg>

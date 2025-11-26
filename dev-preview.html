@@ -1,0 +1,144 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <title>Curbonomix - Dev Preview</title>
+  <style>body{font-family:Arial,system-ui;background:#0b1220;color:#e6eef8;padding:20px} .card{background:#072033;padding:16px;border-radius:8px;max-width:900px}</style>
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+</head>
+<body>
+  <div class="card">
+    <h1>Curbonomix — Dev Preview</h1>
+    <p>This preview mimics the customer-portal. It uses the local stub API at <code>http://127.0.0.1:4011</code>.</p>
+
+    <div style="display:flex;gap:12px;align-items:flex-start">
+      <div style="flex:1;min-width:320px">
+        <label>Existing model</label>
+        <select id="existing" style="width:100%;padding:8px;margin-top:6px">
+          <option>TRANE-TTA090</option>
+          <option>LENNOX-LGA120</option>
+          <option>CARRIER-50TC-12</option>
+        </select>
+
+        <label style="margin-top:8px">New model</label>
+        <select id="next" style="width:100%;padding:8px;margin-top:6px">
+          <option>LENNOX-LGA120</option>
+          <option>TRANE-TTA090</option>
+          <option>CARRIER-50TC-12</option>
+        </select>
+
+        <label style="display:flex;gap:8px;align-items:center;margin-top:10px">
+          <input type="checkbox" id="manual"/> <span>Model not available → manual entry</span>
+        </label>
+
+        <div id="manualFields" style="display:none;margin-top:10px;grid-template-columns:1fr 1fr;gap:8px">
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+            <div><label>base L (in)</label><input id="new_L" type="number" style="width:100%"/></div>
+            <div><label>base W (in)</label><input id="new_W" type="number" style="width:100%"/></div>
+            <div><label>height (in)</label><input id="height" type="number" style="width:100%"/></div>
+            <div><label>flange_h</label><input id="flange_h" type="number" style="width:100%"/></div>
+            <div><label>supply_x</label><input id="supply_x" type="number" style="width:100%"/></div>
+            <div><label>supply_y</label><input id="supply_y" type="number" style="width:100%"/></div>
+            <div><label>return_x</label><input id="return_x" type="number" style="width:100%"/></div>
+            <div><label>steel_gauge</label><input id="steel_gauge" type="number" style="width:100%"/></div>
+            <div><label>sst</label><input id="sst" type="number" style="width:100%"/></div>
+            <div><label>brake_lim</label><input id="brake_lim" type="number" style="width:100%"/></div>
+            <div><label>top L2 (in)</label><input id="new_L2" type="number" style="width:100%"/></div>
+            <div><label>top W2 (in)</label><input id="new_W2" type="number" style="width:100%"/></div>
+          </div>
+        </div>
+
+        <div style="display:flex;gap:8px;margin-top:12px">
+          <button id="btnPreview">Preview</button>
+          <button id="btnDesign">Confirm</button>
+          <button id="btnSub">Submittal</button>
+        </div>
+
+        <div style="display:flex;gap:8px;margin-top:8px">
+          <button id="btnDXF">DXF</button>
+          <button id="btnG">GCODE .TXT</button>
+        </div>
+
+        <div id="perf" style="margin-top:8px;color:#bfe6ff"></div>
+      </div>
+
+      <div style="flex:2;display:flex;gap:12px">
+        <div id="viewer" style="width:640px;height:420px;background:#051826;border-radius:6px"></div>
+        <pre id="out" style="white-space:pre-wrap;background:#02131b;padding:12px;border-radius:6px;flex:1;min-width:260px;max-height:420px;overflow:auto"></pre>
+      </div>
+    </div>
+  </div>
+  <script>
+    const API = 'http://127.0.0.1:4011';
+    async function J(u,o){ const r=await fetch(u,o); if(!r.ok) throw new Error(await r.text()); return r.json(); }
+
+    // minimal three.js renderer via CDN
+    const {THREE} = await import('https://unpkg.com/three@0.166.0/build/three.module.js');
+    const { OrbitControls } = await import('https://unpkg.com/three@0.166.0/examples/jsm/controls/OrbitControls.js');
+
+    const mount = document.getElementById('viewer');
+    const scene = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(45, 640/420, 0.1, 10000);
+    const renderer = new THREE.WebGLRenderer({antialias:true}); renderer.setSize(640,420); mount.appendChild(renderer.domElement);
+    const controls = new OrbitControls(camera, renderer.domElement);
+    scene.add(new THREE.AmbientLight(0x88ccff,0.6)); const dir=new THREE.DirectionalLight(0x99ddff,0.8); dir.position.set(200,260,300); scene.add(dir);
+    camera.position.set(200,200,200); controls.update();
+
+    function drawGeo(g){ // g: {vertices,faces}
+      while(scene.children.length>0) scene.remove(scene.children[0]);
+      scene.add(new THREE.AmbientLight(0x88ccff,0.6)); scene.add(dir);
+      const pos=[]; for(const f of g.faces) for(const i of f){ const v=g.vertices[i]; pos.push(v[0],v[1],v[2]); }
+      const geom = new THREE.BufferGeometry(); geom.setAttribute('position', new THREE.Float32BufferAttribute(pos,3)); geom.computeVertexNormals();
+      const mesh = new THREE.Mesh(geom, new THREE.MeshStandardMaterial({metalness:0.2,roughness:0.6})); scene.add(mesh);
+      const box=new THREE.Box3().setFromObject(mesh), c=new THREE.Vector3(), size=new THREE.Vector3(); box.getCenter(c); box.getSize(size);
+      const d = Math.max(size.x,size.y,size.z)*1.8 || 200; camera.position.set(c.x+d,c.y+d,c.z+d); camera.lookAt(c); controls.target.copy(c); controls.update();
+    }
+
+    // helpers
+    function getBody(){
+      const manual = document.getElementById('manual').checked;
+      if(manual){
+        const keys=['new_L','new_W','height','flange_h','supply_x','supply_y','return_x','steel_gauge','sst','brake_lim','new_L2','new_W2'];
+        const b = { manual_existing:true, manual_new:true };
+        for(const k of keys){ const el=document.getElementById(k); if(el && el.value) b[k]=Number(el.value); }
+        return b;
+      }
+      return { existing_model: document.getElementById('existing').value, new_model: document.getElementById('next').value };
+    }
+
+    async function doPreview(){ const out=document.getElementById('out'); out.textContent='loading...';
+      try{
+        const b = getBody();
+        const r = await J(API + '/rtu/preview', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(b) });
+        out.textContent = JSON.stringify(r, null, 2); drawGeo(r.geo); showPerf(r.perf);
+      }catch(e){ out.textContent = 'Error: ' + e.message }
+    }
+
+    async function doDesign(){ const out=document.getElementById('out'); out.textContent='designing...';
+      try{ const b=getBody(); const r = await J(API + '/rtu/design', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(b) });
+        out.textContent = JSON.stringify(r, null, 2); drawGeo(r.data.geo); showPerf(r.data.perf);
+      }catch(e){ out.textContent='Error: '+e.message }
+    }
+
+    async function doDownload(path, filenameFallback){ try{
+      const b=getBody(); const res = await fetch(API + path, { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(b) });
+      if(!res.ok) throw new Error(await res.text()); const blob = await res.blob(); const url = URL.createObjectURL(blob); window.open(url, '_blank');
+    }catch(e){ document.getElementById('out').textContent='Error: '+e.message }}
+
+    function showPerf(p){ const el=document.getElementById('perf'); if(!p) { el.textContent=''; return;} el.textContent = `Supply ${p.cfm_s} cfm · Return ${p.cfm_r} cfm · ΔP ${p.dp_inwc} in.wc` }
+
+    document.getElementById('btnPreview').addEventListener('click', doPreview);
+    document.getElementById('btnDesign').addEventListener('click', doDesign);
+    document.getElementById('btnDXF').addEventListener('click', ()=>doDownload('/rtu/dxf'));
+    document.getElementById('btnG').addEventListener('click', ()=>doDownload('/rtu/gcode'));
+    document.getElementById('btnSub').addEventListener('click', ()=>doDownload('/rtu/submittal'));
+
+    document.getElementById('manual').addEventListener('change', (e)=>{
+      document.getElementById('manualFields').style.display = e.target.checked ? 'grid' : 'none';
+    });
+
+    function animate(){ requestAnimationFrame(animate); renderer.render(scene,camera); }
+    animate();
+  </script>
+</body>
+</html>

@@ -1,5 +1,15 @@
-{ "compilerOptions":{
-  "target":"ES2020","module":"CommonJS","moduleResolution":"Node",
-  "declaration":true,"outDir":"dist","strict":true,"skipLibCheck":true,
-  "esModuleInterop":true,"forceConsistentCasingInFileNames":true,"resolveJsonModule":true
-} }
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
+    "strict": true,
+    "declaration": true,
+    "skipLibCheck": true,
+    "noEmit": false,
+    "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true,
+    "resolveJsonModule": true,
+    "baseUrl": "."
+  }
+}

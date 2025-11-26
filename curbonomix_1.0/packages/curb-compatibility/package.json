@@ -1,0 +1,16 @@
+{
+  "name": "@curbonomix/curb-compatibility",
+  "version": "0.0.1",
+  "type": "module",
+  "main": "./src/index.js",
+  "types": "./src/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./src/index.js",
+      "types": "./src/index.d.ts"
+    }
+  },
+  "dependencies": {
+    "rtu-library": "file:../rtu-library"
+  }
+}

@@ -16,14 +16,14 @@ export class MemoryStore {
   dump() {
     return { ...this.store };
   }
-  // index.ts
-import type { IAgent } from "../../../lms/src";
-import { ArchitectAgent } from "./ArchitectAgent";
+}
+
+// index.ts
+import type { IAgent } from "./index.js";
+import { ArchitectAgent } from "@curbonomix/agents-architect";
 
 const agent: IAgent = new ArchitectAgent();
 
 export default agent;
 export { ArchitectAgent };
 export type { IAgent };
-
-}

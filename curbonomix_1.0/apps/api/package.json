@@ -1,28 +1,32 @@
 {
-  "name":"@curbonomix/api","version":"0.0.0","private":true,"type":"commonjs","main":"dist/main.js",
-  "scripts":{"dev":"ts-node src/main.ts","build":"tsc -p tsconfig.json","start":"node dist/main.js"},
-  "dependencies":{"fastify":"^4.25.0"},
-  "devDependencies":{"typescript":"^5.5.4","ts-node":"^10.9.2","@types/node":"^20.11.0"}
-}
-// apps/api/package.json
-"dependencies": {
-  "@curbonomix/agents": "workspace:*",
-  "@curbonomix/lms": "workspace:*",
-  "@curbonomix/curb-calculator": "workspace:*",
-  "@curbonomix/shared": "workspace:*"
-}
-
-{
-  "name": "curbonomix",
-  "version": "1.0.0",
+  "name": "@curbonomix/api",
+  "version": "0.0.0",
   "private": true,
-  "workspaces": [
-    "packages/*",
-    "apps/*"
-  ],
-  "scripts": {        
-    "dev:api": "npm run dev --workspace=@curbonomix/api",
-    "dev:web": "npm run dev --workspace=@curbonomix/customer-portal",
-    "build:web": "npm run build --workspace=@curbonomix/customer-portal"
+  "type": "module",
+  "main": "dist/main.js",
+  "scripts": {
+    "dev": "tsx src/main.ts",
+    "build": "tsc -p tsconfig.json",
+    "start": "node dist/main.js"
+  },
+  "dependencies": {
+    "@curbonomix/agents-architect": "file:../../packages/agents/architect",
+    "@curbonomix/agents-designer": "file:../../packages/agents/designer",
+    "@curbonomix/agents-engineer": "file:../../packages/agents/engineer",
+    "@curbonomix/ai-governor": "file:../../packages/ai-governor",
+  "@curbonomix/adapter-database": "file:../../packages/adapter-database",
+    "@curbonomix/curb-calculator": "file:../../packages/curb-calculator",
+  "@curbonomix/curb-compatibility": "file:../../packages/curb-compatibility",
+    "@curbonomix/lms": "file:../../packages/lms",
+    "@curbonomix/rtu-core": "file:../../packages/rtu-core",
+    "@curbonomix/shared": "file:../../packages/shared",
+    "rtu-library": "file:../../packages/rtu-library",
+    "fastify": "^4.25.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.11.0",
+    "ts-node": "^10.9.2",
+    "tsx": "^4.20.6",
+    "typescript": "^5.5.4"
   }
-}   
+}

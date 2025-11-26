@@ -1,2 +1,2 @@
-import server from "./src/main.js";
+import server from "./main.mts";
 await server.ready();
